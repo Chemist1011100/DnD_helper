@@ -1,0 +1,114 @@
+class Enemy:
+    def __init__(self, name, hp, armor_class, damage, attack_description):
+        self.name = name
+        self.hp = hp
+        self.armor_class = armor_class
+        self.damage = damage
+        self.attack_description = attack_description
+
+    def take_damage(self, damage):
+        self.hp -= damage
+
+    def is_alive(self):
+        return self.hp > 0
+
+# Examples of opponents
+class NPC(Enemy):
+    def __init__(self):
+        super().__init__("NPC", 30, 15, (2, 6), "обычная атака мечом")
+
+class Bandit(Enemy):
+    def __init__(self):
+        super().__init__("Bandit", 20, 12, (1, 8), "атака клинком")
+
+class Goblin(Enemy):
+    def __init__(self):
+        super().__init__("Goblin", 15, 13, (1, 6), "колющая атака копьем")
+
+class Spider(Enemy):
+    def __init__(self):
+        super().__init__("Spider", 10, 14, (1, 4), "плетущая атака клыками")
+
+class Dreyk(Enemy):
+    def __init__(self):
+        super().__init__("Dreyk", 40, 18, (2, 10), "сильная атака языком")
+
+# Creating opponents
+npc = NPC()
+bandit = Bandit()
+goblin = Goblin()
+spider = Spider()
+dreyk = Dreyk()
+
+import tkinter as tk
+
+# GUI
+class DnDApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("D&D Helper")
+
+        # Creating opponents
+        self.npc = NPC()
+        self.bandit = Bandit()
+        self.goblin = Goblin()
+        self.spider = Spider()
+        self.dreyk = Dreyk()
+
+        # Creating interface
+        self.enemy_label = tk.Label(root, text="Выберите противника:")
+        self.enemy_label.pack()
+
+        self.enemy_var = tk.StringVar()
+        self.enemy_var.set("NPC")
+
+        self.enemy_menu = tk.OptionMenu(root, self.enemy_var, "NPC", "Bandit", "Goblin", "Spider", "Dreyk")
+        self.enemy_menu.pack()
+
+        self.stats_label = tk.Label(root, text="Характеристики:")
+        self.stats_label.pack()
+
+        self.stats_text = tk.Text(root, height=10, width=40)
+        self.stats_text.pack()
+
+        self.damage_label = tk.Label(root, text="Введите урон:")
+        self.damage_label.pack()
+
+        self.damage_entry = tk.Entry(root)
+        self.damage_entry.pack()
+
+        self.damage_button = tk.Button(root, text="Нанести урон", command=self.apply_damage)
+        self.damage_button.pack()
+
+
+    # update stats after damage
+    def update_stats(self, enemy):
+        self.stats_text.delete(1.0, tk.END)
+        self.stats_text.insert(tk.END, f"Имя: {enemy.name}\n")
+        self.stats_text.insert(tk.END, f"HP: {enemy.hp}\n")
+        self.stats_text.insert(tk.END, f"Armor Class: {enemy.armor_class}\n")
+        self.stats_text.insert(tk.END, f"Атака: {enemy.damage} ({enemy.attack_description})\n")
+
+    def apply_damage(self):
+        global enemy
+        enemy_name = self.enemy_var.get()
+        damage = int(self.damage_entry.get())
+
+        if enemy_name == "NPC":
+            enemy = self.npc
+        elif enemy_name == "Bandit":
+            enemy = self.bandit
+        elif enemy_name == "Goblin":
+            enemy = self.goblin
+        elif enemy_name == "Spider":
+            enemy = self.spider
+        elif enemy_name == "Dreyk":
+            enemy = self.dreyk
+
+        enemy.take_damage(damage)
+        self.update_stats(enemy)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = DnDApp(root)
+    root.mainloop()
